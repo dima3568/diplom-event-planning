@@ -1,0 +1,156 @@
+/**
+ * Файл: assets/style.css
+ * Описание: Кастомные стили для страниц авторизации.
+ *           Адаптивная верстка, центрированные карточки,
+ *           единая цветовая палитра с лендингом.
+ * Дипломный проект: «Веб-приложение для совместного планирования мероприятий»
+ * Год: 2026
+ */
+
+/* ===== ПЕРЕМЕННЫЕ ===== */
+:root {
+    --indigo: #4f46e5;
+    --blue: #3b82f6;
+    --white: #ffffff;
+    --light-gray: #f8fafc;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --gradient: linear-gradient(135deg, var(--indigo), var(--blue));
+}
+
+/* ===== ОБЩИЕ ===== */
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--light-gray);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ===== КАРТОЧКА АВТОРИЗАЦИИ ===== */
+.auth-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.auth-card .card-header {
+    background: var(--gradient);
+    color: var(--white);
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.auth-card .card-body {
+    padding: 2rem;
+}
+
+/* ===== КНОПКИ ===== */
+.btn-auth-primary {
+    background: var(--gradient);
+    border: none;
+    color: var(--white);
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    transition: opacity 0.2s ease;
+}
+
+.btn-auth-primary:hover,
+.btn-auth-primary:focus {
+    opacity: 0.85;
+    color: var(--white);
+}
+
+.btn-oauth {
+    border: 1px solid #e2e8f0;
+    background: var(--white);
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-oauth:hover:not(:disabled) {
+    border-color: var(--indigo);
+    background-color: rgba(79, 70, 229, 0.05);
+}
+
+.btn-oauth:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ===== ССЫЛКИ В КАРТОЧКЕ ===== */
+.auth-link {
+    color: var(--indigo);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.auth-link:hover,
+.auth-link:focus {
+    color: var(--blue);
+    text-decoration: underline;
+}
+
+/* ===== ИКОНКИ В INPUT-GROUP ===== */
+.input-group-text {
+    background-color: var(--light-gray);
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .form-control:focus {
+    border-left: none;
+    box-shadow: none;
+    border-color: var(--blue);
+}
+
+/* ===== ФУТЕР ===== */
+.auth-footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.auth-footer a {
+    color: var(--indigo);
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 575.98px) {
+    .auth-card {
+        margin: 1rem;
+        border-radius: 10px;
+    }
+
+    .auth-card .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .auth-card .card-body {
+        padding: 1.25rem;
+    }
+}

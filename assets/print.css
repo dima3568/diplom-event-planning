@@ -1,0 +1,117 @@
+/**
+ * Файл: assets/print.css
+ * Описание: Стили для печати (@media print).
+ *           Скрывает навигацию, кнопки, формы, сайдбар.
+ *           Убирает фоны, оставляет чёрный текст на белом.
+ *           Форматирует таблицы для бумаги, добавляет колонтитулы.
+ * Дипломный проект: «Веб-приложение для совместного планирования мероприятий»
+ * Год: 2026
+ */
+
+@media print {
+    /* ===== Скрываем ненужные элементы ===== */
+    .navbar,
+    .print-hide,
+    nav,
+    .btn,
+    button,
+    form,
+    .modal,
+    .dropdown,
+    .pagination,
+    footer,
+    .no-print {
+        display: none !important;
+    }
+
+    /* ===== Базовые стили ===== */
+    body {
+        font-size: 12pt;
+        color: #000;
+        background: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    a {
+        color: #000;
+        text-decoration: none;
+    }
+
+    /* ===== Заголовки ===== */
+    h1, h2, h3, h4, h5, h6 {
+        color: #000;
+        page-break-after: avoid;
+    }
+
+    /* ===== Таблицы ===== */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+    }
+
+    table th,
+    table td {
+        border: 1px solid #333;
+        padding: 6px 8px;
+        text-align: left;
+        font-size: 10pt;
+    }
+
+    table th {
+        background: #f0f0f0;
+        font-weight: bold;
+    }
+
+    /* ===== Карточки ===== */
+    .card {
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    .card-header {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        border-bottom: 1px solid #ccc;
+    }
+
+    /* ===== Бейджи статусов ===== */
+    .badge {
+        border: 1px solid #333;
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    /* ===== Прогресс-бары ===== */
+    .progress {
+        border: 1px solid #333;
+        background: #fff;
+    }
+
+    .progress-bar {
+        background: #666 !important;
+    }
+
+    /* ===== Колонтитулы ===== */
+    @page {
+        margin: 2cm;
+        @top-center {
+            content: "EventPlanner — Дипломный проект 2026";
+            font-size: 9pt;
+            color: #666;
+        }
+        @bottom-center {
+            content: "Страница " counter(page) " из " counter(pages);
+            font-size: 9pt;
+            color: #666;
+        }
+    }
+
+    /* ===== Избегаем разрыва внутри блоков ===== */
+    .list-group-item,
+    .card-body {
+        break-inside: avoid;
+    }
+}
