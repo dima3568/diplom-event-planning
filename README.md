@@ -1,1 +1,0 @@
-# diplom-event-planning
