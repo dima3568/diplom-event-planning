@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Дипломный проект — Веб-приложение для совместного планирования мероприятий">
+  <title>EventPlanner — Совместное планирование мероприятий</title>
+
+  <!-- Bootstrap 5 CDN (без integrity — чтобы избежать блокировки при хеш-несовпадении) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <!-- Bootstrap Icons CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" crossorigin="anonymous">
+
+  <style>
+    /* ===== ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ ===== */
+    :root {
+      --indigo: #4f46e5;
+      --blue: #3b82f6;
+      --white: #ffffff;
+      --light-gray: #f8fafc;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --gradient: linear-gradient(135deg, var(--indigo), var(--blue));
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-dark);
+      background-color: var(--white);
+      line-height: 1.6;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: var(--white);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--indigo) !important;
+    }
+
+    .nav-link {
+      font-weight: 500;
+      color: var(--text-dark) !important;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus {
+      color: var(--indigo) !important;
+    }
+
+    .btn-auth {
+      color: var(--indigo);
+      border: 1px solid var(--indigo);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-auth:hover,
+    .btn-auth:focus {
+      background-color: var(--indigo);
+      color: var(--white);
+    }
+
+    .btn-register {
+      background: var(--gradient);
+      color: var(--white);
+      border: none;
+      font-weight: 500;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-register:hover,
+    .btn-register:focus {
+      opacity: 0.85;
+      color: var(--white);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: var(--gradient);
+      color: var(--white);
+      padding: 6rem 0 4rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .hero .subtitle {
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 600px;
+      margin: 1.5rem auto 0;
+    }
+
+    .hero .btn-cta {
+      background-color: var(--white);
+      color: var(--indigo);
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .hero .btn-cta:hover,
+    .hero .btn-cta:focus {
+      background-color: rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
+      color: var(--indigo);
+    }
+
+    .hero .btn-cta-outline {
+      background: transparent;
+      color: var(--white);
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      transition: all 0.2s ease;
+    }
+
+    .hero .btn-cta-outline:hover,
+    .hero .btn-cta-outline:focus {
+      border-color: var(--white);
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    /* ===== ОБЩИЕ СЕКЦИИ ===== */
+    section {
+      padding: 4rem 0;
+    }
+
+    section:nth-child(even) {
+      background-color: var(--light-gray);
+    }
+
+    .section-title {
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+
+    /* ===== КАРТОЧКИ "О ПРОЕКТЕ" ===== */
+    .feature-card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      height: 100%;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: var(--gradient);
+      color: var(--white);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ===== ШАГИ "КАК ЭТО РАБОТАЕТ" ===== */
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gradient);
+      color: var(--white);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .step-icon {
+      font-size: 2rem;
+      color: var(--indigo);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ===== ТЕХНОЛОГИИ ===== */
+    .tech-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      background: var(--white);
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      transition: border-color 0.2s ease;
+    }
+
+    .tech-item:hover {
+      border-color: var(--indigo);
+    }
+
+    .tech-item i {
+      font-size: 1.5rem;
+      color: var(--indigo);
+    }
+
+    .tech-item span {
+      font-weight: 600;
+    }
+
+    /* ===== CTA-БЛОК ===== */
+    .cta-section {
+      background: var(--gradient);
+      color: var(--white);
+      text-align: center;
+      padding: 4rem 0;
+    }
+
+    .cta-section h2 {
+      font-weight: 700;
+    }
+
+    .cta-section .btn {
+      background-color: var(--white);
+      color: var(--indigo);
+      font-weight: 600;
+      padding: 0.75rem 2.5rem;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .cta-section .btn:hover,
+    .cta-section .btn:focus {
+      background-color: rgba(255, 255, 255, 0.9);
+      color: var(--indigo);
+      transform: translateY(-1px);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background-color: var(--text-dark);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 2.5rem 0;
+    }
+
+    footer a {
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover,
+    footer a:focus {
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    /* ===== РАЗДЕЛИТЕЛЬНЫЕ ЛИНИИ МЕЖДУ ШАГАМИ ===== */
+    .step-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      opacity: 0.4;
+      font-size: 1.5rem;
+    }
+
+    @media (max-width: 767.98px) {
+      .step-connector {
+        transform: rotate(90deg);
+        margin: 0.5rem 0;
+      }
+    }
+
+    /* ===== СКРОЛЛ-ОТСТУП ДЛЯ ЯКОРНЫХ ССЫЛОК ===== */
+    section[id] {
+      scroll-margin-top: 4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================== NAVBAR ======================== -->
+  <nav class="navbar navbar-expand-lg fixed-top" aria-label="Основная навигация">
+    <div class="container">
+      <!-- Название бренда -->
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>EventPlanner
+      </a>
+
+      <!-- Мобильный переключатель -->
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="Открыть меню навигации">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Ссылки навигации -->
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="#about">О проекте</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#how-it-works">Как это работает</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#tech">Стек</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contacts">Контакты</a>
+          </li>
+        </ul>
+
+        <!-- Кнопки авторизации -->
+        <div class="d-flex gap-2">
+          <!-- ЗАМЕНИТЬ НА URL PHP-ПРИЛОЖЕНИЯ -->
+          <a href="https://your-php-hosting.com/login.php" class="btn btn-auth btn-sm px-3" role="button">
+            <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>Войти
+          </a>
+          <!-- ЗАМЕНИТЬ НА URL PHP-ПРИЛОЖЕНИЯ -->
+          <a href="https://your-php-hosting.com/register.php" class="btn btn-register btn-sm px-3" role="button">
+            Регистрация
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ======================== HERO ======================== -->
+  <header class="hero" id="hero">
+    <div class="container">
+      <h1>Совместное планирование&nbsp;мероприятий</h1>
+      <p class="subtitle">
+        Создавайте события, приглашайте участников, распределяйте задачи и&nbsp;отслеживайте прогресс — всё в&nbsp;одном веб-приложении.
+      </p>
+      <p class="mt-3" style="font-size: 0.9rem; color: rgba(255,255,255,0.75);">
+        Дипломный проект студента <strong>[ФИО]</strong>, группа <strong>[номер]</strong>, научный руководитель <strong>[ФИО]</strong>
+      </p>
+      <div class="mt-4 d-flex gap-3 justify-content-center flex-wrap">
+        <!-- ЗАМЕНИТЬ НА URL PHP-ПРИЛОЖЕНИЯ -->
+        <a href="https://your-php-hosting.com/register.php" class="btn btn-cta" role="button">
+          Начать бесплатно
+        </a>
+        <a href="#about" class="btn btn-cta-outline" role="button">
+          Узнать больше
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ======================== О ПРОЕКТЕ ======================== -->
+    <section id="about" aria-labelledby="about-title">
+      <div class="container text-center">
+        <h2 class="section-title" id="about-title">О проекте</h2>
+        <p class="section-subtitle">
+          Организация мероприятий — это сложный процесс, требующий координации множества людей. Наше приложение решает эту проблему.
+        </p>
+
+        <div class="row g-4">
+          <!-- Карточка 1: Проблема -->
+          <div class="col-md-6 col-lg-3">
+            <div class="card feature-card p-4 text-center">
+              <div class="feature-icon mx-auto" aria-hidden="true">
+                <i class="bi bi-exclamation-triangle"></i>
+              </div>
+              <h5 class="card-title fw-bold">Проблема</h5>
+              <p class="card-text text-muted">
+                Координация событий через мессенджеры и&nbsp;таблицы приводит к&nbsp;потере информации и&nbsp;путанице.
+              </p>
+            </div>
+          </div>
+
+          <!-- Карточка 2: Решение -->
+          <div class="col-md-6 col-lg-3">
+            <div class="card feature-card p-4 text-center">
+              <div class="feature-icon mx-auto" aria-hidden="true">
+                <i class="bi bi-lightbulb"></i>
+              </div>
+              <h5 class="card-title fw-bold">Решение</h5>
+              <p class="card-text text-muted">
+                Единая платформа, где все участники работают с&nbsp;актуальными данными в&nbsp;реальном времени.
+              </p>
+            </div>
+          </div>
+
+          <!-- Карточка 3: Совместная работа -->
+          <div class="col-md-6 col-lg-3">
+            <div class="card feature-card p-4 text-center">
+              <div class="feature-icon mx-auto" aria-hidden="true">
+                <i class="bi bi-people"></i>
+              </div>
+              <h5 class="card-title fw-bold">Совместно</h5>
+              <p class="card-text text-muted">
+                Приглашайте участников, назначайте ответственных и&nbsp;контролируйте выполнение задач.
+              </p>
+            </div>
+          </div>
+
+          <!-- Карточка 4: Простота -->
+          <div class="col-md-6 col-lg-3">
+            <div class="card feature-card p-4 text-center">
+              <div class="feature-icon mx-auto" aria-hidden="true">
+                <i class="bi bi-hand-thumbs-up"></i>
+              </div>
+              <h5 class="card-title fw-bold">Просто</h5>
+              <p class="card-text text-muted">
+                Интуитивный интерфейс позволяет начать работу без&nbsp;обучения и&nbsp;технических навыков.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== КАК ЭТО РАБОТАЕТ ======================== -->
+    <section id="how-it-works" aria-labelledby="how-title">
+      <div class="container text-center">
+        <h2 class="section-title" id="how-title">Как это работает</h2>
+        <p class="section-subtitle">
+          Четыре простых шага от&nbsp;идеи до&nbsp;успешного мероприятия
+        </p>
+
+        <div class="row align-items-center g-3">
+          <!-- Шаг 1 -->
+          <div class="col-6 col-md-3">
+            <div class="step-number mx-auto">1</div>
+            <div class="step-icon" aria-hidden="true">
+              <i class="bi bi-plus-circle"></i>
+            </div>
+            <h5 class="fw-bold">Создай событие</h5>
+            <p class="text-muted small">Укажи дату, место и&nbsp;детали мероприятия</p>
+          </div>
+
+          <!-- Разделитель -->
+          <div class="col d-none d-md-block step-connector" aria-hidden="true">
+            <i class="bi bi-chevron-right"></i>
+          </div>
+
+          <!-- Шаг 2 -->
+          <div class="col-6 col-md-3">
+            <div class="step-number mx-auto">2</div>
+            <div class="step-icon" aria-hidden="true">
+              <i class="bi bi-envelope-paper"></i>
+            </div>
+            <h5 class="fw-bold">Пригласи</h5>
+            <p class="text-muted small">Отправь ссылку-приглашение участникам</p>
+          </div>
+
+          <!-- Разделитель -->
+          <div class="col d-none d-md-block step-connector" aria-hidden="true">
+            <i class="bi bi-chevron-right"></i>
+          </div>
+
+          <!-- Шаг 3 -->
+          <div class="col-6 col-md-3">
+            <div class="step-number mx-auto">3</div>
+            <div class="step-icon" aria-hidden="true">
+              <i class="bi bi-check2-square"></i>
+            </div>
+            <h5 class="fw-bold">Распредели</h5>
+            <p class="text-muted small">Назначь задачи и&nbsp;ответственных</p>
+          </div>
+
+          <!-- Разделитель -->
+          <div class="col d-none d-md-block step-connector" aria-hidden="true">
+            <i class="bi bi-chevron-right"></i>
+          </div>
+
+          <!-- Шаг 4 -->
+          <div class="col-6 col-md-3">
+            <div class="step-number mx-auto">4</div>
+            <div class="step-icon" aria-hidden="true">
+              <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <h5 class="fw-bold">Отслеживай</h5>
+            <p class="text-muted small">Следи за&nbsp;прогрессом в&nbsp;реальном времени</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== ТЕХНОЛОГИИ ======================== -->
+    <section id="tech" aria-labelledby="tech-title">
+      <div class="container text-center">
+        <h2 class="section-title" id="tech-title">Технологии</h2>
+        <p class="section-subtitle">
+          Простой и&nbsp;надёжный стек для&nbsp;лёгкого развёртывания на&nbsp;любом хостинге
+        </p>
+
+        <div class="row g-3 justify-content-center">
+          <!-- PHP 8 -->
+          <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="tech-item">
+              <i class="bi bi-filetype-php" aria-hidden="true"></i>
+              <span>PHP 8</span>
+            </div>
+          </div>
+
+          <!-- SQLite 3 -->
+          <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="tech-item">
+              <i class="bi bi-database" aria-hidden="true"></i>
+              <span>SQLite 3</span>
+            </div>
+          </div>
+
+          <!-- Bootstrap 5 -->
+          <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="tech-item">
+              <i class="bi bi-bootstrap" aria-hidden="true"></i>
+              <span>Bootstrap 5</span>
+            </div>
+          </div>
+
+          <!-- HTML / CSS -->
+          <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="tech-item">
+              <i class="bi bi-filetype-html" aria-hidden="true"></i>
+              <span>HTML5 / CSS3</span>
+            </div>
+          </div>
+
+          <!-- Git -->
+          <div class="col-sm-6 col-md-4 col-lg-3 mx-auto">
+            <div class="tech-item">
+              <i class="bi bi-git" aria-hidden="true"></i>
+              <span>Git</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== CTA-БЛОК ======================== -->
+    <section class="cta-section" aria-labelledby="cta-title">
+      <div class="container">
+        <h2 id="cta-title" class="mb-3">Готовы организовать мероприятие?</h2>
+        <p class="mb-4 mx-auto" style="max-width: 500px; color: rgba(255,255,255,0.85);">
+          Перейдите в&nbsp;приложение, создайте аккаунт и&nbsp;начните планирование прямо&nbsp;сейчас.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <!-- ЗАМЕНИТЬ НА URL PHP-ПРИЛОЖЕНИЯ -->
+          <a href="https://your-php-hosting.com/register.php" class="btn" role="button">
+            <i class="bi bi-rocket-takeoff me-1" aria-hidden="true"></i>Перейти в&nbsp;приложение
+          </a>
+          <!-- ЗАМЕНИТЬ НА URL PHP-ПРИЛОЖЕНИЯ -->
+          <a href="https://your-php-hosting.com/login.php" class="btn" style="background:transparent; color:#fff; border:2px solid rgba(255,255,255,0.7);" role="button">
+            <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>Войти
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================== FOOTER ======================== -->
+  <footer id="contacts">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Колонка 1: О проекте -->
+        <div class="col-md-4">
+          <h6 class="fw-bold text-white mb-3">
+            <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>EventPlanner
+          </h6>
+          <p class="small mb-0">
+            Веб-приложение для совместного планирования мероприятий.<br>
+            Дипломный проект, 2026.
+          </p>
+        </div>
+
+        <!-- Колонка 2: Вуз и кафедра -->
+        <div class="col-md-4">
+          <h6 class="fw-bold text-white mb-3">Образовательное учреждение</h6>
+          <p class="small mb-1">[Название вуза]</p>
+          <p class="small mb-0">Кафедра [название кафедры]</p>
+        </div>
+
+        <!-- Колонка 3: Контакты и ссылки -->
+        <div class="col-md-4">
+          <h6 class="fw-bold text-white mb-3">Контакты</h6>
+          <ul class="list-unstyled small mb-0">
+            <!-- Ссылка на GitHub-репозиторий -->
+            <li class="mb-2">
+              <a href="https://github.com/your-username/event-planner" aria-label="Ссылка на GitHub-репозиторий проекта">
+                <i class="bi bi-github me-1" aria-hidden="true"></i>GitHub-репозиторий
+              </a>
+            </li>
+            <!-- Контакт студента (email) -->
+            <li class="mb-2">
+              <a href="mailto:student@university.edu" aria-label="Написать студенту на электронную почту">
+                <i class="bi bi-envelope me-1" aria-hidden="true"></i>student&#64;university.edu
+              </a>
+            </li>
+            <!-- Контакт студента (телефон) -->
+            <li>
+              <a href="tel:+70001234567" aria-label="Позвонить студенту">
+                <i class="bi bi-telephone me-1" aria-hidden="true"></i>+7&nbsp;(000)&nbsp;123-45-67
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Разделитель -->
+      <hr class="my-4" style="border-color: rgba(255,255,255,0.15);">
+
+      <!-- Копирайт -->
+      <div class="text-center small" style="color: rgba(255,255,255,0.5);">
+        &copy; 2026 EventPlanner. Все права защищены. Дипломный проект.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 JS Bundle (Popper included) — без integrity для избежания блокировки -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          crossorigin="anonymous"></script>
+
+</body>
+</html>
